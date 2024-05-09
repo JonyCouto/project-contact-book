@@ -1,0 +1,72 @@
+<template>
+    <v-card>
+        <v-layout>
+            <v-navigation-drawer
+                :expandOnHover="true"
+                :rail="true"
+                class="nav"
+                :color="store.getTheme ? 'grey-darken-4' : 'green-darken-4'"
+            >
+                <v-list density="compact" nav>
+                    <v-list-item
+                        v-for="(item, index) in items"
+                        :key="index"
+                        :prepend-icon="item.icon"
+                        :title="item.text"
+                        @click="$router.push(item.link || '/')"
+                    >
+                    </v-list-item>
+                </v-list>
+            </v-navigation-drawer>
+            <v-main style="height: 100%"></v-main>
+        </v-layout>
+    </v-card>
+</template>
+
+<script setup lang="ts">
+import { useAppStore } from '@/stores/store';
+import { type IItems } from '@/interfaces/items';
+const store = useAppStore();
+const items: Array<IItems> = [
+    {
+        icon: 'mdi-home',
+        text: 'Home',
+        redirect: true,
+        link: '/',
+        external: false
+    },
+    {
+        icon: 'mdi-account-edit',
+        text: 'Meu cadastro',
+        redirect: true,
+        link: '/meuCadastro',
+        external: false
+    },
+    {
+        icon: 'mdi-account-multiple',
+        text: 'Pessoas',
+        redirect: true,
+        link: '/pessoas',
+        external: false
+    },
+    {
+        icon: 'mdi-account-box',
+        text: 'Contatos',
+        redirect: true,
+        link: '/contatos',
+        external: false
+    },
+    {
+        icon: 'mdi-cog',
+        text: 'Usuários',
+        redirect: true,
+        link: '/usuarios',
+        external: false
+    }
+];
+</script>
+
+<style lang="scss">
+.nav {
+}
+</style>
