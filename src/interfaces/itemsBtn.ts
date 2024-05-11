@@ -7,4 +7,6 @@ export interface IItems {
     external?: boolean;
     variant?: string;
     size?: string;
+    color?: string;
+    hide?: boolean;
 }

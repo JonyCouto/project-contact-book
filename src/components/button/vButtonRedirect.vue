@@ -1,7 +1,7 @@
 <template>
     <a :href="props.link" :target="external ? '_blank' : ''" :class="white ? 'white' : 'black'">
         <v-btn :variant="props.variant" :prependIcon="icon" :size="props.size" class="btn">
-            {{ smAndDown ? '' : props.text }}
+            {{ smAndDown && props.hide ? '' : props.text }}
         </v-btn>
     </a>
 </template>
@@ -16,7 +16,8 @@ const props = defineProps({
     external: Boolean,
     variant: String,
     size: String,
-    white: Boolean
+    white: Boolean,
+    hide: Boolean
 });
 </script>
 

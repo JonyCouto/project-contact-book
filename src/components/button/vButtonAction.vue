@@ -1,6 +1,6 @@
 <template>
-    <v-btn :variant="props.variant" :prependIcon="icon" :size="props.size">
-        {{ smAndDown ? '' : props.text }}
+    <v-btn :variant="props.variant" :prependIcon="icon" :size="props.size" :color="props.color">
+        {{ smAndDown && props.hide ? '' : props.text }}
     </v-btn>
 </template>
 
@@ -11,7 +11,9 @@ const props = defineProps({
     icon: String,
     text: String,
     variant: String,
-    size: String
+    size: String,
+    color: String,
+    hide: Boolean
 });
 </script>
 <style></style>

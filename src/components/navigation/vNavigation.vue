@@ -5,7 +5,7 @@
                 :expandOnHover="true"
                 :rail="true"
                 class="nav"
-                :color="store.getTheme ? 'grey-darken-4' : 'green-darken-4'"
+                :color="store.getTheme ? 'grey-darken-4' : '#6D4C41'"
             >
                 <v-list density="compact" nav>
                     <v-list-item
@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 import { useAppStore } from '@/stores/store';
-import { type IItems } from '@/interfaces/items';
+import { type IItems } from '@/interfaces/itemsBtn';
 const store = useAppStore();
 const items: Array<IItems> = [
     {
@@ -66,7 +66,4 @@ const items: Array<IItems> = [
 ];
 </script>
 
-<style lang="scss">
-.nav {
-}
-</style>
+<style lang="scss"></style>

@@ -32,7 +32,10 @@
     <!--Menu sem navigation-->
     <v-menu v-else>
         <template v-slot:activator="{ props }">
-            <v-btn :color="store.getTheme ? 'black' : ''" v-bind="props" prependIcon="mdi-menu"
+            <v-btn
+                :color="store.getTheme ? 'green-darken-4' : ''"
+                v-bind="props"
+                prependIcon="mdi-menu"
                 >Menu</v-btn
             >
         </template>
@@ -66,7 +69,7 @@ import { useDisplay } from 'vuetify/lib/framework.mjs';
 import { useAppStore } from '@/stores/store';
 import vButtonRedirect from '@/components/button/vButtonRedirect.vue';
 import vButtonAction from '@/components/button/vButtonAction.vue';
-import { type IItems } from '@/interfaces/items';
+import { type IItems } from '@/interfaces/itemsBtn';
 const { mdAndDown } = useDisplay();
 const store = useAppStore();
 const itemsWithoutNavigation: Array<IItems> = [

@@ -37,11 +37,13 @@ const { smAndDown } = useDisplay();
 }
 .whiteApp {
     .header {
-        background-color: $green;
+        // background-color: $background-color;
+        background-image: url('./assets/img/fundo.jpg');
         box-shadow: $box-shadown;
     }
     .footer {
-        background-color: $green;
+        // background-color: $background-color;
+        background-image: url('./assets/img/fundo.jpg');
         box-shadow: $box-shadown-up;
     }
     a {
@@ -72,7 +74,7 @@ const { smAndDown } = useDisplay();
 .app {
     min-height: 100vh;
     display: grid;
-    grid-template-rows: 10vh 1fr;
+    grid-template-rows: 15vh 1fr;
 }
 .smallApp {
     grid-template-columns: 100%;
