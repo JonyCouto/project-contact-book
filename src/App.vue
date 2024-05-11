@@ -57,7 +57,7 @@ const { smAndDown } = useDisplay();
     a {
         text-decoration: none;
     }
-    background-color: rgb(24, 25, 26);
+    background-color: #18191a;
     .header,
     .navigation {
         background-color: $dark;

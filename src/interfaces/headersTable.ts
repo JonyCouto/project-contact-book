@@ -1,3 +1,6 @@
-export interface ITable {
-    header: string;
+export interface IHeadersTable {
+    align: string;
+    key: string;
+    sortable: boolean;
+    title: string;
 }

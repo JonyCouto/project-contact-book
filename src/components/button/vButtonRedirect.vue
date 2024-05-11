@@ -1,6 +1,16 @@
 <template>
-    <a :href="props.link" :target="external ? '_blank' : ''" :class="white ? 'white' : 'black'">
-        <v-btn :variant="props.variant" :prependIcon="icon" :size="props.size" class="btn">
+    <a
+        :href="props.link"
+        :target="props.external ? '_blank' : ''"
+        :class="props.white ? 'white' : 'black'"
+    >
+        <v-btn
+            :variant="props.variant"
+            :prependIcon="icon"
+            :size="props.size"
+            :class="props.minWidth ? '' : 'btn'"
+            :color="props.color"
+        >
             {{ smAndDown && props.hide ? '' : props.text }}
         </v-btn>
     </a>
@@ -17,7 +27,9 @@ const props = defineProps({
     variant: String,
     size: String,
     white: Boolean,
-    hide: Boolean
+    hide: Boolean,
+    color: String,
+    minWidth: Boolean
 });
 </script>
 

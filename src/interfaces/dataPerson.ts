@@ -6,6 +6,6 @@ export interface IDataPerson {
         name: string;
         type: string;
     };
-    cpf: string;
-    endereco: string;
+    cpf?: string;
+    endereco?: string;
 }

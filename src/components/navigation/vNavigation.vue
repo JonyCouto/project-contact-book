@@ -1,26 +1,25 @@
 <template>
-    <v-card>
-        <v-layout>
-            <v-navigation-drawer
-                :expandOnHover="true"
-                :rail="true"
-                class="nav"
-                :color="store.getTheme ? 'grey-darken-4' : '#6D4C41'"
-            >
-                <v-list density="compact" nav>
-                    <v-list-item
-                        v-for="(item, index) in items"
-                        :key="index"
-                        :prepend-icon="item.icon"
-                        :title="item.text"
-                        @click="$router.push(item.link || '/')"
-                    >
-                    </v-list-item>
-                </v-list>
-            </v-navigation-drawer>
-            <v-main style="height: 100%"></v-main>
-        </v-layout>
-    </v-card>
+    <v-card> </v-card>
+    <v-layout>
+        <v-navigation-drawer
+            :expandOnHover="true"
+            :rail="true"
+            class="nav"
+            :color="store.getTheme ? 'grey-darken-4' : '#6D4C41'"
+        >
+            <v-list density="compact" nav>
+                <v-list-item
+                    v-for="(item, index) in items"
+                    :key="index"
+                    :prepend-icon="item.icon"
+                    :title="item.text"
+                    @click="$router.push(item.link || '/')"
+                >
+                </v-list-item>
+            </v-list>
+        </v-navigation-drawer>
+        <v-main style="height: 250px"></v-main>
+    </v-layout>
 </template>
 
 <script setup lang="ts">
