@@ -1,5 +1,6 @@
 <template>
     <v-card> </v-card>
+    <!--v-layout não precisa ser encapsulado dentro do v-card, mas esse elemento precisa existir-->
     <v-layout>
         <v-navigation-drawer
             :expandOnHover="true"

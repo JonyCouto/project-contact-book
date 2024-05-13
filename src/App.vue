@@ -1,6 +1,7 @@
 <template>
     <!--Verificação primeiro de tema e logo em seguida verificação de largura de dispositivo-->
     <div
+        v-if="store.getLoggedInfo"
         :class="
             store.getTheme
                 ? smAndDown
@@ -16,6 +17,9 @@
         <RouterView class="content" />
         <vFooter class="footer" />
     </div>
+    <div class="login" v-else>
+        <vLogin />
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -24,6 +28,7 @@ import { useDisplay } from 'vuetify/lib/framework.mjs';
 import vHeader from '@/components/header/vHeader.vue';
 import vFooter from '@/components/footer/vFooter.vue';
 import vNavigation from '@/components/navigation/vNavigation.vue';
+import vLogin from './views/vLogin.vue';
 const store = useAppStore();
 const { smAndDown } = useDisplay();
 </script>
@@ -105,7 +110,15 @@ const { smAndDown } = useDisplay();
 .content {
     grid-area: content;
 }
-.navigation {
-    grid-area: navigation;
+// .navigation { // Código não é necessário, o v-navigation se ajusta conforme precisa
+//     grid-area: navigation;
+// }
+.login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-image: url('./assets/img/fundo.jpg');
+    background-repeat: repeat;
 }
 </style>

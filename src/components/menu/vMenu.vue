@@ -78,6 +78,14 @@ const itemsWithoutNavigation: Array<IItems> = [
         text: 'Alternar exibição',
         action: store.changeTheme,
         redirect: false
+    },
+    {
+        icon: 'mdi-logout',
+        text: 'Logout',
+        action: () => {
+            console.log('Saindo');
+        },
+        redirect: false
     }
 ];
 const itemsWithNavigation: Array<IItems> = [
@@ -120,6 +128,14 @@ const itemsWithNavigation: Array<IItems> = [
         icon: 'mdi-brightness-6',
         text: 'Alternar exibição',
         action: store.changeTheme,
+        redirect: false
+    },
+    {
+        icon: 'mdi-logout',
+        text: 'Logout',
+        action: () => {
+            console.log('Saindo');
+        },
         redirect: false
     }
 ];

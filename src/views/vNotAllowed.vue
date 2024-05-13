@@ -1,7 +1,7 @@
 <template>
     <div>
-        <h2>Erro 404</h2>
-        <p>Não encontrado</p>
+        <h2>Erro 403</h2>
+        <p>Acesso não permitido</p>
     </div>
 </template>
 

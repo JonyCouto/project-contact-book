@@ -37,19 +37,19 @@
                 >
                     <template v-slot:[`item.foto`]="{ item }">
                         <v-avatar>
-                            <v-img :src="`${item.foto.name}.${item.foto.type}`" alt="foto"></v-img>
+                            <v-img
+                                :src="`${item.pessoa.foto.name}.${item.pessoa.foto.type}`"
+                                alt="foto"
+                            ></v-img>
                         </v-avatar>
                     </template>
-                    <template v-slot:[`item.favoritar`]="{ item }">
-                        <vButtonRedirect
-                            :external="false"
-                            :link="`/:${item.id}`"
-                            icon="mdi-star"
-                            text=""
-                            :hide="true"
-                            color="#FBC02D"
-                            :minWidth="true"
-                        />
+                    <template v-slot:[`item.privado`]="{ item }">
+                        <v-checkbox
+                            v-model="item.privado"
+                            :label="item.privado ? 'Sim' : 'Não'"
+                            color="orange"
+                            :readonly="true"
+                        ></v-checkbox>
                     </template>
                     <template v-slot:[`item.editar`]="{ item }">
                         <vButtonRedirect
@@ -69,13 +69,60 @@
                             icon="mdi-delete"
                             text=""
                             :hide="true"
-                            color="#DD2C00"
+                            color="red"
                             :minWidth="true"
                         />
                     </template>
                 </v-data-table>
             </v-row>
-            <v-row cols="12" v-show="tab == 'favorities'"> </v-row>
+            <v-row cols="12" v-show="tab == 'favorities'">
+                <v-data-table
+                    :headers="headersTable"
+                    :items="itemsTable"
+                    :search="search"
+                    itemsPerPageText="Itens por página"
+                    :class="store.getTheme ? ['tableDark', 'space'] : 'space'"
+                >
+                    <template v-slot:[`item.foto`]="{ item }">
+                        <v-avatar>
+                            <v-img
+                                :src="`${item.pessoa.foto.name}.${item.pessoa.foto.type}`"
+                                alt="foto"
+                            ></v-img>
+                        </v-avatar>
+                    </template>
+                    <template v-slot:[`item.privado`]="{ item }">
+                        <v-checkbox
+                            v-model="item.privado"
+                            :label="item.privado ? 'Sim' : 'Não'"
+                            color="orange"
+                            :readonly="true"
+                        ></v-checkbox>
+                    </template>
+                    <template v-slot:[`item.editar`]="{ item }">
+                        <vButtonRedirect
+                            :external="false"
+                            :link="`/:${item.id}`"
+                            icon="mdi-pencil"
+                            text=""
+                            :hide="true"
+                            color="#FBC02D"
+                            :minWidth="true"
+                        />
+                    </template>
+                    <template v-slot:[`item.excluir`]="{ item }">
+                        <vButtonRedirect
+                            :external="false"
+                            :link="`/:${item.id}`"
+                            icon="mdi-delete"
+                            text=""
+                            :hide="true"
+                            color="red"
+                            :minWidth="true"
+                        />
+                    </template>
+                </v-data-table>
+            </v-row>
         </v-containeir-fluid>
     </div>
 </template>
@@ -87,7 +134,7 @@ import { type IItems } from '@/interfaces/itemsBtn';
 import { ref, reactive } from 'vue';
 import { type IHeadersTable } from '@/interfaces/headersTable';
 import axios from 'axios';
-import { type IDataPerson } from '@/interfaces/dataPerson';
+import { type IDataContact } from '@/interfaces/dataContact';
 import vTitle from '@/templates/vTitle.vue';
 import { useAppStore } from '@/stores/store';
 const store = useAppStore();
@@ -147,24 +194,38 @@ const headersTable: Array<IHeadersTable> = [
         title: 'Excluir'
     }
 ];
-const itemsTable: Array<IDataPerson> = reactive([]);
-async function loadPeople() {
-    const response = await axios
-        .get('http://localhost/data/people.php')
-        .catch((err) => console.log(err));
-    if (response.status == 200) {
-        response.data.forEach((element: IDataPerson) => {
-            itemsTable.push({
-                id: element.id,
-                foto: element.foto,
-                nome: element.nome
-            });
-        });
-    } else {
-        console.log('Erro');
+const itemsTable: Array<IDataContact> = reactive([
+    {
+        id: 1,
+        email: '',
+        pessoa: {
+            id: 1,
+            nome: '',
+            foto: {
+                id: '1',
+                name: '',
+                type: ''
+            },
+            cpf: '',
+            endereco: ''
+        },
+        privado: false,
+        tag: '',
+        telefone: '',
+        tipoContato: '',
+        usuario: {
+            cpf: '',
+            birthDate: '', // yyyy-mm-dd
+            email: '',
+            id: 1,
+            nome: '',
+            password: '',
+            telefone: '', // (DD) [X]XXXX-XXXX. Ex: (12) 99876-5432, (12) 3210-4567
+            username: ''
+        }
     }
-}
-loadPeople();
+]);
+async function loadContacts() {}
 // consegui deixar uma table genérica, mas o ruim disso, é que em algumas predefinições que tenho que fazer, não fica legal
 </script>
 
