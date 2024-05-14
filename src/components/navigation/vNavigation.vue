@@ -55,15 +55,18 @@ const items: Array<IItems> = [
         redirect: true,
         link: '/contatos',
         external: false
-    },
-    {
+    }
+];
+function extendsOptionsForAdmin() {
+    items.push({
         icon: 'mdi-cog',
         text: 'Usuários',
         redirect: true,
         link: '/usuarios',
         external: false
-    }
-];
+    });
+}
+if (store.getUserLogged.tipos[0] == 'ROLE_ADMIN') extendsOptionsForAdmin();
 </script>
 
 <style lang="scss"></style>

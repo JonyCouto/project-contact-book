@@ -83,7 +83,8 @@ const itemsWithoutNavigation: Array<IItems> = [
         icon: 'mdi-logout',
         text: 'Logout',
         action: () => {
-            console.log('Saindo');
+            // limpar usuário logado e trocar para false o campo de logado
+            store.logoutUser();
         },
         redirect: false
     }
@@ -118,13 +119,6 @@ const itemsWithNavigation: Array<IItems> = [
         external: false
     },
     {
-        icon: 'mdi-cog',
-        text: 'Usuários',
-        redirect: true,
-        link: '/usuarios',
-        external: false
-    },
-    {
         icon: 'mdi-brightness-6',
         text: 'Alternar exibição',
         action: store.changeTheme,
@@ -134,11 +128,21 @@ const itemsWithNavigation: Array<IItems> = [
         icon: 'mdi-logout',
         text: 'Logout',
         action: () => {
-            console.log('Saindo');
+            store.logoutUser();
         },
         redirect: false
     }
 ];
+function extendsOptionsForAdmin() {
+    itemsWithNavigation.push({
+        icon: 'mdi-cog',
+        text: 'Usuários',
+        redirect: true,
+        link: '/usuarios',
+        external: false
+    });
+}
+if (store.getUserLogged.tipos[0] == 'ROLE_ADMIN') extendsOptionsForAdmin();
 </script>
 
 <style scoped>

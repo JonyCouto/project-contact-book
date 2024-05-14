@@ -30,7 +30,7 @@
             <v-row cols="12" v-show="tab == 'contacts'">
                 <v-data-table
                     :headers="headersTable"
-                    :items="itemsTable"
+                    :items="itemsTableContacts"
                     :search="search"
                     itemsPerPageText="Itens por página"
                     :class="store.getTheme ? ['tableDark', 'space'] : 'space'"
@@ -78,7 +78,7 @@
             <v-row cols="12" v-show="tab == 'favorities'">
                 <v-data-table
                     :headers="headersTable"
-                    :items="itemsTable"
+                    :items="itemsTableFavorities"
                     :search="search"
                     itemsPerPageText="Itens por página"
                     :class="store.getTheme ? ['tableDark', 'space'] : 'space'"
@@ -194,7 +194,7 @@ const headersTable: Array<IHeadersTable> = [
         title: 'Excluir'
     }
 ];
-const itemsTable: Array<IDataContact> = reactive([
+const itemsTableContacts: Array<IDataContact> = reactive([
     {
         id: 1,
         email: '',
@@ -215,7 +215,38 @@ const itemsTable: Array<IDataContact> = reactive([
         tipoContato: '',
         usuario: {
             cpf: '',
-            birthDate: '', // yyyy-mm-dd
+            dataNascimento: '', // yyyy-mm-dd
+            email: '',
+            id: 1,
+            nome: '',
+            password: '',
+            telefone: '', // (DD) [X]XXXX-XXXX. Ex: (12) 99876-5432, (12) 3210-4567
+            username: ''
+        }
+    }
+]);
+const itemsTableFavorities: Array<IDataContact> = reactive([
+    {
+        id: 1,
+        email: '',
+        pessoa: {
+            id: 1,
+            nome: '',
+            foto: {
+                id: '1',
+                name: '',
+                type: ''
+            },
+            cpf: '',
+            endereco: ''
+        },
+        privado: false,
+        tag: '',
+        telefone: '',
+        tipoContato: '',
+        usuario: {
+            cpf: '',
+            dataNascimento: '', // yyyy-mm-dd
             email: '',
             id: 1,
             nome: '',
@@ -226,6 +257,7 @@ const itemsTable: Array<IDataContact> = reactive([
     }
 ]);
 async function loadContacts() {}
+async function saveAsFavorite() {}
 // consegui deixar uma table genérica, mas o ruim disso, é que em algumas predefinições que tenho que fazer, não fica legal
 </script>
 

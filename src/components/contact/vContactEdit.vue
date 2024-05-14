@@ -5,54 +5,66 @@
                 <vTitle text="Edição de contato" />
             </v-col>
         </v-row>
-        <v-row>
-            <v-col cols="12">
-                <v-text-field label="Nome" v-model="data.pessoa.nome" variant="solo" readonly>
-                </v-text-field>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col cols="12" md="6">
-                <v-text-field
-                    label="Email"
-                    v-model="data.email"
-                    :rules="rules.ruleText"
-                    variant="solo"
-                >
-                </v-text-field>
-            </v-col>
-            <v-col cols="12" md="6">
-                <v-text-field
-                    label="Telefone"
-                    v-model="data.telefone"
-                    :rules="rules.ruleText"
-                    variant="solo"
-                >
-                </v-text-field>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col cols="12" md="6">
-                <v-text-field label="Tag" v-model="data.tag" :rules="rules.ruleText" variant="solo">
-                </v-text-field>
-            </v-col>
-            <v-col cols="12" md="6">
-                <v-combobox
-                    label="Tipo contato"
-                    v-model="data.tipoContato"
-                    :rules="rules.ruleText"
-                    :items="['CELULAR', 'EMAIL', 'TELEFONE']"
-                    variant="solo"
-                >
-                </v-combobox>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col cols="12">
-                <v-checkbox label="Privado" v-model="data.privado" variant="solo" color="orange">
-                </v-checkbox>
-            </v-col>
-        </v-row>
+        <v-form ref="form">
+            <v-row>
+                <v-col cols="12">
+                    <v-text-field label="Nome" v-model="data.pessoa.nome" variant="solo" readonly>
+                    </v-text-field>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col cols="12" md="6">
+                    <v-text-field
+                        label="Email"
+                        v-model="data.email"
+                        :rules="rules.ruleText"
+                        variant="solo"
+                    >
+                    </v-text-field>
+                </v-col>
+                <v-col cols="12" md="6">
+                    <v-text-field
+                        label="Telefone"
+                        v-model="data.telefone"
+                        :rules="rules.ruleText"
+                        variant="solo"
+                    >
+                    </v-text-field>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col cols="12" md="6">
+                    <v-text-field
+                        label="Tag"
+                        v-model="data.tag"
+                        :rules="rules.ruleText"
+                        variant="solo"
+                    >
+                    </v-text-field>
+                </v-col>
+                <v-col cols="12" md="6">
+                    <v-combobox
+                        label="Tipo contato"
+                        v-model="data.tipoContato"
+                        :rules="rules.ruleText"
+                        :items="['CELULAR', 'EMAIL', 'TELEFONE']"
+                        variant="solo"
+                    >
+                    </v-combobox>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col cols="12">
+                    <v-checkbox
+                        label="Privado"
+                        v-model="data.privado"
+                        variant="solo"
+                        color="orange"
+                    >
+                    </v-checkbox>
+                </v-col>
+            </v-row>
+        </v-form>
         <v-row justify="end">
             <v-col cols="12" sm="3" md="2">
                 <vButtonAction
@@ -79,6 +91,11 @@ import vTitle from '@/templates/vTitle.vue';
 import vButtonAction from '../button/vButtonAction.vue';
 import type { IDataContact } from '@/interfaces/dataContact';
 import { reactive } from 'vue';
+import { ref } from 'vue';
+import { validate } from '@/global/validate';
+import { useAppStore } from '@/stores/store';
+const store = useAppStore();
+const form = ref(null);
 const rules = {
     ruleText: [(v) => !!v || 'Preenchimento é obrigatório!'],
     ruleCpf: [(v) => !!v || 'Preenchimento é obrigatório!']
@@ -102,7 +119,7 @@ const data: IDataContact = reactive({
     telefone: '',
     tipoContato: '',
     usuario: {
-        birthDate: '',
+        dataNascimento: '',
         cpf: '',
         email: '',
         id: 1,
@@ -112,7 +129,12 @@ const data: IDataContact = reactive({
         username: ''
     }
 });
-function saveContact(data: IDataContact) {}
+async function saveContact(data: IDataContact) {
+    if (await validate(form)) {
+        store.setMsgSnackbar('Aguarde...');
+        // salvar contato
+    }
+}
 </script>
 
 <style></style>

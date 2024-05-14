@@ -1,9 +1,25 @@
 import { ref, reactive, computed } from 'vue';
 import { defineStore } from 'pinia';
+import { type IDataLogin } from '@/interfaces/dataLogin';
+import { type IDataUserLogged } from '@/interfaces/dataUserLogged';
+import axios from 'axios';
 
 export const useAppStore = defineStore('store', () => {
     const darkTheme = ref(false);
+    const endpoint = 'https://demometaway.vps-kinghost.net:8485';
     const logged = ref(false);
+    const userLogged: IDataUserLogged = reactive({
+        accessToken: '',
+        id: -1,
+        tipos: [''],
+        tokenType: '',
+        username: ''
+    });
+    const preferentialLogin = ref(false);
+    const savedLogin: IDataLogin = reactive({
+        username: '',
+        password: ''
+    });
     const snackbar = reactive({
         status: false,
         msg: ''
@@ -18,6 +34,9 @@ export const useAppStore = defineStore('store', () => {
     const getMsgSnackbar = computed((): string => {
         return snackbar.msg;
     });
+    const getStatusSnackbar = computed((): boolean => {
+        return snackbar.status;
+    });
     const getLoggedInfo = computed((): boolean => {
         if (localStorage.getItem('logged')) {
             // ajuste de erro para ts
@@ -25,6 +44,78 @@ export const useAppStore = defineStore('store', () => {
         }
         return logged.value;
     });
+    const getEndpoint = computed((): string => {
+        return endpoint;
+    });
+    const getSavedLogin = computed(() => {
+        if (localStorage.getItem('savedLogin')) {
+            const data: IDataLogin = JSON.parse(
+                localStorage.getItem('savedLogin') || '{"username": "", "password": ""}'
+            );
+            savedLogin.username = data.username;
+            savedLogin.password = data.password;
+        }
+        return savedLogin;
+    });
+    const getPreferentialLogin = computed(() => {
+        if (localStorage.getItem('preferentialLogin')) {
+            preferentialLogin.value = JSON.parse(
+                localStorage.getItem('preferentialLogin') || 'false'
+            );
+        }
+        return preferentialLogin.value;
+    });
+    const getUserLogged = computed(() => {
+        if (localStorage.getItem('userLogged')) {
+            const data: IDataUserLogged = JSON.parse(
+                localStorage.getItem('userLogged') ||
+                    '{"username": "", "accessToken": "", "id": -1, "tipos": [""], "tokenType": ""}'
+            );
+            userLogged.accessToken = data.accessToken;
+            userLogged.id = data.id;
+            userLogged.tipos = data.tipos;
+            userLogged.tokenType = data.tokenType;
+            userLogged.username = data.username;
+            axios.defaults.headers.common['Authorization'] =
+                `${userLogged.tokenType} ${userLogged.accessToken}`;
+        }
+        return userLogged;
+    });
+    function changeLoggedStatus() {
+        logged.value = !logged.value;
+        localStorage.logged = logged.value;
+    }
+    function saveUserLogged(data: IDataUserLogged) {
+        userLogged.username = data.username;
+        userLogged.accessToken = data.accessToken;
+        userLogged.id = data.id;
+        userLogged.tipos = data.tipos;
+        userLogged.tokenType = data.tokenType;
+        axios.defaults.headers.common['Authorization'] =
+            `${userLogged.tokenType} ${userLogged.accessToken}`;
+        console.log(axios.defaults.headers.common['Authorization']);
+        localStorage.userLogged = JSON.stringify(userLogged);
+        changeLoggedStatus(); // troca status para logado
+    }
+    function logoutUser() {
+        userLogged.accessToken = '';
+        userLogged.id = -1;
+        userLogged.tipos = [''];
+        userLogged.tokenType = '';
+        userLogged.username = '';
+        axios.defaults.headers.common['Authorization'] = ``;
+        localStorage.removeItem('userLogged');
+        changeLoggedStatus(); // troca status para deslogado
+    }
+    function saveLogin(login: IDataLogin) {
+        savedLogin.username = login.username;
+        savedLogin.password = login.password;
+        localStorage.savedLogin = JSON.stringify(savedLogin);
+        localStorage.preferentialLogin = preferentialLogin.value;
+    }
+    function changePreferentialLogin() {
+        preferentialLogin.value = !preferentialLogin.value;
+    }
     function changeTheme() {
         darkTheme.value = !darkTheme.value;
         localStorage.darkTheme = darkTheme.value;
@@ -39,15 +130,22 @@ export const useAppStore = defineStore('store', () => {
         activeSnackbar();
         snackbar.msg = msg;
     }
-
     return {
-        darkTheme,
         getTheme,
+        getMsgSnackbar,
+        getLoggedInfo,
+        getEndpoint,
+        getSavedLogin,
+        getPreferentialLogin,
+        getStatusSnackbar,
+        getUserLogged,
+        saveUserLogged,
+        logoutUser,
+        changePreferentialLogin,
+        saveLogin,
         changeTheme,
         activeSnackbar,
         setMsgSnackbar,
-        getMsgSnackbar,
-        desativeSnackbar,
-        getLoggedInfo
+        desativeSnackbar
     };
 });

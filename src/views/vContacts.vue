@@ -155,7 +155,7 @@ const itemsTable: Array<IDataContact> = reactive([
         tipoContato: '',
         usuario: {
             cpf: '',
-            birthDate: '', // yyyy-mm-dd
+            dataNascimento: '', // yyyy-mm-dd
             email: '',
             id: 1,
             nome: '',

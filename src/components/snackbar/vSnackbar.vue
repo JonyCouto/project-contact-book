@@ -1,5 +1,5 @@
 <template>
-    <v-snackbar v-model="snackbar">
+    <v-snackbar v-model="store.getStatusSnackbar" vertical multi-line absolute>
         {{ store.getMsgSnackbar }}
         <template v-slot:actions>
             <v-btn color="red" variant="text" @click="store.desativeSnackbar"> Close </v-btn>
@@ -12,4 +12,8 @@ import { useAppStore } from '@/stores/store';
 const store = useAppStore();
 </script>
 
-<style></style>
+<style>
+.v-snackbar__wrapper {
+    min-width: auto !important;
+}
+</style>

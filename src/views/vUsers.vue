@@ -7,6 +7,20 @@
                 </v-col>
             </v-row>
             <v-row class="space"> </v-row>
+            <v-row justify="end">
+                <v-col cols="12">
+                    <vButtonRedirect
+                        :external="false"
+                        link="usuarios/editar/novo"
+                        icon="mdi-plus"
+                        :hide="false"
+                        color="blue"
+                        text="Adicionar"
+                        :min-width="true"
+                        class="end"
+                    />
+                </v-col>
+            </v-row>
             <v-text-field
                 v-model="search"
                 label="Procurar"
@@ -59,6 +73,7 @@ import { type IHeadersTable } from '@/interfaces/headersTable';
 import axios from 'axios';
 import { type IDataUser } from '@/interfaces/dataUser';
 import vTitle from '@/templates/vTitle.vue';
+import router from '@/router';
 import { useAppStore } from '@/stores/store';
 const store = useAppStore();
 const search = ref('');
@@ -97,7 +112,7 @@ const headersTable: Array<IHeadersTable> = [
 const itemsTable: Array<IDataUser> = reactive([
     {
         cpf: '1',
-        birthDate: '',
+        dataNascimento: '',
         email: '',
         id: 1,
         nome: '',
@@ -107,7 +122,7 @@ const itemsTable: Array<IDataUser> = reactive([
     },
     {
         cpf: '1',
-        birthDate: '',
+        dataNascimento: '',
         email: '',
         id: 1,
         nome: '',
@@ -117,11 +132,22 @@ const itemsTable: Array<IDataUser> = reactive([
     }
 ]);
 async function loadUsers() {}
-loadUsers();
+function verifyPermission() {
+    if (store.getUserLogged.tipos[0] != 'ROLE_ADMIN') {
+        router.push('/notAllowed');
+    } else {
+        loadUsers();
+    }
+}
+verifyPermission();
 </script>
 
 <style lang="scss" scoped>
 .space {
     margin-top: 10px;
+}
+.end {
+    display: flex;
+    justify-content: end;
 }
 </style>

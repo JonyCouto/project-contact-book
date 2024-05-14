@@ -16,9 +16,11 @@
         <vNavigation v-if="smAndDown == false" class="navigation" />
         <RouterView class="content" />
         <vFooter class="footer" />
+        <vSnackbar />
     </div>
     <div class="login" v-else>
         <vLogin />
+        <vSnackbar />
     </div>
 </template>
 
@@ -29,6 +31,7 @@ import vHeader from '@/components/header/vHeader.vue';
 import vFooter from '@/components/footer/vFooter.vue';
 import vNavigation from '@/components/navigation/vNavigation.vue';
 import vLogin from './views/vLogin.vue';
+import vSnackbar from './components/snackbar/vSnackbar.vue';
 const store = useAppStore();
 const { smAndDown } = useDisplay();
 </script>

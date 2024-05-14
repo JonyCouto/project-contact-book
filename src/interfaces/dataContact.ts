@@ -18,7 +18,7 @@ export interface IDataContact {
     tipoContato: string;
     usuario: {
         cpf: string;
-        birthDate: string; // yyyy-mm-dd
+        dataNascimento: string; // yyyy-mm-dd
         email: string;
         id: number;
         nome: string;
