@@ -10,7 +10,16 @@ export interface IDataContact {
             type: string;
         };
         cpf?: string;
-        endereco?: string;
+        endereco: {
+            bairro: string;
+            cep: string;
+            cidade: string;
+            estado: string;
+            id: number;
+            logradouro: string;
+            numero: number;
+            pais: string;
+        };
     };
     privado: boolean;
     tag: string;

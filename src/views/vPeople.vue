@@ -7,6 +7,20 @@
                 </v-col>
             </v-row>
             <v-row class="space"> </v-row>
+            <v-row justify="end">
+                <v-col cols="12">
+                    <vButtonRedirect
+                        :external="false"
+                        link="pessoas/editar/novo"
+                        icon="mdi-plus"
+                        :hide="false"
+                        color="blue"
+                        text="Adicionar"
+                        :min-width="true"
+                        class="end"
+                    />
+                </v-col>
+            </v-row>
             <v-text-field
                 v-model="search"
                 label="Procurar"
@@ -23,16 +37,17 @@
                     :search="search"
                     itemsPerPageText="Itens por página"
                     :class="store.getTheme ? ['tableDark', 'space'] : 'space'"
+                    noDataText="Sem dados"
                 >
                     <template v-slot:[`item.foto`]="{ item }">
                         <v-avatar>
-                            <v-img :src="`${item.foto.name}.${item.foto.type}`" alt="foto"></v-img>
+                            <v-img :src="''" alt="foto"></v-img>
                         </v-avatar>
                     </template>
                     <template v-slot:[`item.editar`]="{ item }">
                         <vButtonRedirect
                             :external="false"
-                            :link="`/:${item.id}`"
+                            :link="`/pessoas/editar/${item.id}`"
                             icon="mdi-pencil"
                             text=""
                             :hide="true"
@@ -41,14 +56,13 @@
                         />
                     </template>
                     <template v-slot:[`item.excluir`]="{ item }">
-                        <vButtonRedirect
-                            :external="false"
-                            :link="`/:${item.id}`"
+                        <vButtonAction
                             icon="mdi-delete"
                             text=""
                             :hide="true"
                             color="#DD2C00"
                             :minWidth="true"
+                            @click="deletePerson(item)"
                         />
                     </template>
                 </v-data-table>
@@ -58,6 +72,7 @@
 </template>
 
 <script setup lang="ts">
+import vButtonAction from '@/components/button/vButtonAction.vue';
 import vButtonRedirect from '@/components/button/vButtonRedirect.vue';
 import { ref, reactive } from 'vue';
 import { type IHeadersTable } from '@/interfaces/headersTable';
@@ -65,6 +80,7 @@ import axios from 'axios';
 import { type IDataPerson } from '@/interfaces/dataPerson';
 import vTitle from '@/templates/vTitle.vue';
 import { useAppStore } from '@/stores/store';
+import router from '@/router';
 const store = useAppStore();
 const search = ref('');
 const headersTable: Array<IHeadersTable> = [
@@ -93,31 +109,36 @@ const headersTable: Array<IHeadersTable> = [
         title: 'Excluir'
     }
 ];
-const itemsTable: Array<IDataPerson> = reactive([
-    {
-        id: 1,
-        cpf: '12864523680',
-        endereco: 'Av. São Vicente, 4100, Bloco 4 ap 303',
-        foto: {
-            id: '1',
-            name: 'https://randomuser.me/api/portraits/women/85',
-            type: 'jpg'
-        },
-        nome: 'Jonathan Vinicius Couto'
-    },
-    {
-        id: 2,
-        cpf: '70071870059',
-        endereco: 'Irlanda',
-        foto: {
-            id: '2',
-            name: 'https://randomuser.me/api/portraits/women/85',
-            type: 'jpg'
-        },
-        nome: 'Henrique Eduardo Couto'
-    }
-]);
-async function loadPeople() {}
+const itemsTable: Array<IDataPerson> = reactive([]);
+async function loadPeople() {
+    await axios(`${store.getEndpoint}/api/pessoa/pesquisar`, {
+        method: 'POST',
+        data: {
+            nome: ''
+        }
+    })
+        .then((res) => {
+            const data: Array<IDataPerson> = res.data;
+            data.forEach((element) => {
+                itemsTable.push({ ...element });
+            });
+        })
+        .catch((err) => {
+            store.setMsgSnackbar(err.message);
+        });
+}
+async function deletePerson(data: IDataPerson) {
+    await axios(`${store.getEndpoint}/api/pessoa/remover/${data.id}`, {
+        method: 'DELETE'
+    })
+        .then((res) => {
+            store.setMsgSnackbar(res.data.message);
+            router.go(); //reload
+        })
+        .catch((err) => {
+            store.setMsgSnackbar(err.message);
+        });
+}
 loadPeople();
 </script>
 

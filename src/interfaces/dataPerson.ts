@@ -6,6 +6,15 @@ export interface IDataPerson {
         name: string;
         type: string;
     };
-    cpf?: string;
-    endereco?: string;
+    cpf: string;
+    endereco: {
+        bairro: string;
+        cep: string;
+        cidade: string;
+        estado: string;
+        id: number;
+        logradouro: string;
+        numero: number;
+        pais: string;
+    };
 }

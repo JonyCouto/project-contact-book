@@ -37,26 +37,16 @@
                     :search="search"
                     itemsPerPageText="Itens por página"
                     :class="store.getTheme ? ['tableDark', 'space'] : 'space'"
+                    noDataText="Sem dados"
                 >
                     <template v-slot:[`item.editar`]="{ item }">
                         <vButtonRedirect
                             :external="false"
-                            :link="`/:${item.id}`"
+                            :link="`/usuarios/editar/${item.id}`"
                             icon="mdi-pencil"
                             text=""
                             :hide="true"
                             color="#FBC02D"
-                            :minWidth="true"
-                        />
-                    </template>
-                    <template v-slot:[`item.excluir`]="{ item }">
-                        <vButtonRedirect
-                            :external="false"
-                            :link="`/:${item.id}`"
-                            icon="mdi-delete"
-                            text=""
-                            :hide="true"
-                            color="red"
                             :minWidth="true"
                         />
                     </template>
@@ -71,7 +61,7 @@ import vButtonRedirect from '@/components/button/vButtonRedirect.vue';
 import { ref, reactive } from 'vue';
 import { type IHeadersTable } from '@/interfaces/headersTable';
 import axios from 'axios';
-import { type IDataUser } from '@/interfaces/dataUser';
+import { type IDataUserOnlyObject } from '@/interfaces/dataUserOnlyObject';
 import vTitle from '@/templates/vTitle.vue';
 import router from '@/router';
 import { useAppStore } from '@/stores/store';
@@ -79,59 +69,50 @@ const store = useAppStore();
 const search = ref('');
 const headersTable: Array<IHeadersTable> = [
     {
-        align: 'center',
+        align: 'start',
         key: 'nome',
         sortable: true,
         title: 'Nome'
     },
     {
-        align: 'center',
+        align: 'start',
         key: 'email',
         sortable: true,
         title: 'Email'
     },
     {
-        align: 'center',
+        align: 'start',
         key: 'username',
         sortable: true,
         title: 'Username'
     },
     {
-        align: 'center',
+        align: 'end',
         key: 'editar',
-        sortable: true,
+        sortable: false,
         title: 'Editar'
-    },
-    {
-        align: 'center',
-        key: 'excluir',
-        sortable: true,
-        title: 'Excluir'
     }
 ];
-const itemsTable: Array<IDataUser> = reactive([
-    {
-        cpf: '1',
-        dataNascimento: '',
-        email: '',
-        id: 1,
-        nome: '',
-        password: '',
-        telefone: '',
-        username: ''
-    },
-    {
-        cpf: '1',
-        dataNascimento: '',
-        email: '',
-        id: 1,
-        nome: '',
-        password: '',
-        telefone: '',
-        username: ''
-    }
-]);
-async function loadUsers() {}
+const itemsTable: Array<IDataUserOnlyObject> = reactive([]);
+async function loadUsers() {
+    await axios(`${store.getEndpoint}/api/usuario/pesquisar`, {
+        method: 'POST',
+        data: {
+            termo: ''
+        }
+    })
+        .then((res) => {
+            const data: Array<IDataUserOnlyObject> = res.data;
+            data.forEach((el) => {
+                itemsTable.push({
+                    ...el
+                });
+            });
+        })
+        .catch((err) => {
+            store.setMsgSnackbar(err.message);
+        });
+}
 function verifyPermission() {
     if (store.getUserLogged.tipos[0] != 'ROLE_ADMIN') {
         router.push('/notAllowed');

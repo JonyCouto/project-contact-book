@@ -6,6 +6,7 @@ import vPeople from '@/views/vPeople.vue';
 import vUsers from '@/views/vUsers.vue';
 import vNotFound from '@/views/vNotFound.vue';
 import vContactEdit from '@/components/contact/vContactEdit.vue';
+import vContactAdd from '@/components/contact/vContactAdd.vue';
 import vPersonEdit from '@/components/person/vPersonEdit.vue';
 import vUserEdit from '@/components/user/vUserEdit.vue';
 import vNotAllowed from '@/views/vNotAllowed.vue';
@@ -49,9 +50,14 @@ const router = createRouter({
             component: vPersonEdit
         },
         {
-            path: '/contatos/editar/:id',
+            path: '/contatos/editar/:id/:idContact',
             name: 'contactsEdit',
             component: vContactEdit
+        },
+        {
+            path: '/contatos/adicionar',
+            name: 'contactsAdd',
+            component: vContactAdd
         },
         {
             path: '/notAllowed',

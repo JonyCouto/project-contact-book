@@ -7,6 +7,20 @@
                 </v-col>
             </v-row>
             <v-row class="space"> </v-row>
+            <v-row justify="end">
+                <v-col cols="12">
+                    <vButtonRedirect
+                        :external="false"
+                        link="contatos/adicionar"
+                        icon="mdi-plus"
+                        :hide="false"
+                        color="blue"
+                        text="Adicionar"
+                        :min-width="true"
+                        class="end"
+                    />
+                </v-col>
+            </v-row>
             <v-text-field
                 v-model="search"
                 label="Procurar"
@@ -23,13 +37,11 @@
                     :search="search"
                     itemsPerPageText="Itens por página"
                     :class="store.getTheme ? ['tableDark', 'space'] : 'space'"
+                    noDataText="Sem dados"
                 >
                     <template v-slot:[`item.foto`]="{ item }">
                         <v-avatar>
-                            <v-img
-                                :src="`${item.pessoa.foto.name}.${item.pessoa.foto.type}`"
-                                alt="foto"
-                            ></v-img>
+                            <v-img :src="''"></v-img>
                         </v-avatar>
                     </template>
                     <template v-slot:[`item.privado`]="{ item }">
@@ -43,7 +55,7 @@
                     <template v-slot:[`item.editar`]="{ item }">
                         <vButtonRedirect
                             :external="false"
-                            :link="`/:${item.id}`"
+                            :link="`contatos/editar/${item.pessoa.id}/${item.id}`"
                             icon="mdi-pencil"
                             text=""
                             :hide="true"
@@ -52,9 +64,8 @@
                         />
                     </template>
                     <template v-slot:[`item.excluir`]="{ item }">
-                        <vButtonRedirect
-                            :external="false"
-                            :link="`/:${item.id}`"
+                        <VButtonAction
+                            @click="deleteContact(item)"
                             icon="mdi-delete"
                             text=""
                             :hide="true"
@@ -76,6 +87,9 @@ import axios from 'axios';
 import { type IDataContact } from '@/interfaces/dataContact';
 import vTitle from '@/templates/vTitle.vue';
 import { useAppStore } from '@/stores/store';
+import { useRouter } from 'vue-router';
+import VButtonAction from '@/components/button/vButtonAction.vue';
+const router = useRouter();
 const store = useAppStore();
 const search = ref('');
 const headersTable: Array<IHeadersTable> = [
@@ -87,7 +101,7 @@ const headersTable: Array<IHeadersTable> = [
     },
     {
         align: 'center',
-        key: 'nome',
+        key: 'pessoa.nome',
         sortable: true,
         title: 'Nome'
     },
@@ -134,39 +148,37 @@ const headersTable: Array<IHeadersTable> = [
         title: 'Excluir'
     }
 ];
-const itemsTable: Array<IDataContact> = reactive([
-    {
-        id: 1,
-        email: '',
-        pessoa: {
-            id: 1,
-            nome: '',
-            foto: {
-                id: '1',
-                name: '',
-                type: ''
-            },
-            cpf: '',
-            endereco: ''
-        },
-        privado: false,
-        tag: '',
-        telefone: '',
-        tipoContato: '',
-        usuario: {
-            cpf: '',
-            dataNascimento: '', // yyyy-mm-dd
-            email: '',
-            id: 1,
-            nome: '',
-            password: '',
-            telefone: '', // (DD) [X]XXXX-XXXX. Ex: (12) 99876-5432, (12) 3210-4567
-            username: ''
+const itemsTable: Array<IDataContact> = reactive([]);
+async function loadContacts() {
+    await axios(`${store.getEndpoint}/api/contato/pesquisar`, {
+        method: 'POST',
+        data: {
+            termo: ''
         }
-    }
-]);
-async function loadUsers() {}
-loadUsers();
+    })
+        .then((res) => {
+            const data: Array<IDataContact> = res.data;
+            data.forEach((el) => {
+                itemsTable.push({ ...el });
+            });
+        })
+        .catch((err) => {
+            store.setMsgSnackbar(err.message);
+        });
+}
+async function deleteContact(data: IDataContact) {
+    await axios(`${store.getEndpoint}/api/contato/remover/${data.id}`, {
+        method: 'DELETE'
+    })
+        .then((res) => {
+            store.setMsgSnackbar(res.data.message);
+            router.go(); // reload
+        })
+        .catch((err) => {
+            store.setMsgSnackbar(err.message);
+        });
+}
+loadContacts();
 </script>
 
 <style lang="scss" scoped>

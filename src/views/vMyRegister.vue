@@ -99,7 +99,7 @@
                         :hide="false"
                         icon="mdi-cancel"
                         text="Cancelar"
-                        @click="() => $router.back()"
+                        @click="() => router.push('/')"
                     />
                 </v-col>
                 <v-col cols="12" sm="3" md="2" class="end">
@@ -120,12 +120,13 @@
 import vTitle from '@/templates/vTitle.vue';
 import axios from 'axios';
 import { type IDataUser } from '@/interfaces/dataUser';
-import { reactive, ref } from 'vue';
+import { reactive, ref, toRaw } from 'vue';
 import vButtonAction from '@/components/button/vButtonAction.vue';
 import { useAppStore } from '@/stores/store';
 import { validate } from '@/global/validate';
 import { useRoute } from 'vue-router';
 import router from '@/router';
+import { formatCPFToSend, formatDateToSend, formatMobileToSend } from '@/global/formatData';
 const route = useRoute();
 const store = useAppStore();
 const form = ref(null);
@@ -157,15 +158,7 @@ async function getUserById(id) {
         })
         .then((res) => {
             const user: IDataUser = res.data.object;
-            data.tipos = user.tipos;
-            data.usuario.dataNascimento = user.usuario.dataNascimento;
-            data.usuario.cpf = user.usuario.cpf;
-            data.usuario.id = user.usuario.id;
-            data.usuario.password = user.usuario.password;
-            data.usuario.telefone = user.usuario.telefone;
-            data.usuario.email = user.usuario.email;
-            data.usuario.username = user.usuario.username;
-            data.usuario.nome = user.usuario.nome;
+            Object.assign(data, user);
         })
         .catch((err) => {
             store.setMsgSnackbar(err.response.data.message);
@@ -174,14 +167,18 @@ async function getUserById(id) {
 async function saveUser(user: IDataUser) {
     if (await validate(form)) {
         store.setMsgSnackbar('Aguarde...');
+        const payload = toRaw(data);
+        payload.usuario.cpf = formatCPFToSend(payload.usuario.cpf);
+        payload.usuario.dataNascimento = formatDateToSend(payload.usuario.dataNascimento);
+        payload.usuario.telefone = formatMobileToSend(payload.usuario.telefone);
         // função para salvar usuário
-        await axios
-            .post(`${store.getEndpoint}/api/usuario/salvar`, {
-                data
-            })
+        await axios(`${store.getEndpoint}/api/usuario/atualizar`, {
+            method: 'PUT',
+            data: payload.usuario
+        })
             .then((res) => {
                 store.setMsgSnackbar('Alteração feita com sucesso!');
-                router.push('/home');
+                router.push('/');
             })
             .catch((err) => {
                 console.log(err);

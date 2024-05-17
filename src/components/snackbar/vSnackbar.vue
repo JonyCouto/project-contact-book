@@ -16,4 +16,7 @@ const store = useAppStore();
 .v-snackbar__wrapper {
     min-width: auto !important;
 }
+.v-overlay--absolute {
+    position: fixed !important;
+}
 </style>

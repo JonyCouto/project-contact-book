@@ -6,6 +6,20 @@
                     <vTitle text="Home" />
                 </v-col>
             </v-row>
+            <v-row justify="end">
+                <v-col cols="12">
+                    <vButtonRedirect
+                        :external="false"
+                        link="contatos/editar/novo"
+                        icon="mdi-plus"
+                        :hide="false"
+                        color="blue"
+                        text="Adicionar"
+                        :min-width="true"
+                        class="end"
+                    />
+                </v-col>
+            </v-row>
             <v-row justify="end" class="space">
                 <v-col cols="6" sm="2" v-for="(item, index) in items" :key="index" class="end">
                     <vButtonAction
@@ -34,27 +48,26 @@
                     :search="search"
                     itemsPerPageText="Itens por página"
                     :class="store.getTheme ? ['tableDark', 'space'] : 'space'"
+                    noDataText="Sem dados"
                 >
                     <template v-slot:[`item.foto`]="{ item }">
                         <v-avatar>
-                            <v-img
-                                :src="`${item.pessoa.foto.name}.${item.pessoa.foto.type}`"
-                                alt="foto"
-                            ></v-img>
+                            <v-img :src="``" alt="foto"></v-img>
                         </v-avatar>
                     </template>
-                    <template v-slot:[`item.privado`]="{ item }">
-                        <v-checkbox
-                            v-model="item.privado"
-                            :label="item.privado ? 'Sim' : 'Não'"
+                    <template v-slot:[`item.favoritar`]="{ item }">
+                        <vButtonAction
+                            @click="createAsFavorite(item)"
+                            icon="mdi-star"
+                            :hide="true"
                             color="orange"
-                            :readonly="true"
-                        ></v-checkbox>
+                            :minWidth="true"
+                        />
                     </template>
                     <template v-slot:[`item.editar`]="{ item }">
                         <vButtonRedirect
                             :external="false"
-                            :link="`/:${item.id}`"
+                            :link="`/contatos/editar/${item.id}`"
                             icon="mdi-pencil"
                             text=""
                             :hide="true"
@@ -77,32 +90,31 @@
             </v-row>
             <v-row cols="12" v-show="tab == 'favorities'">
                 <v-data-table
-                    :headers="headersTable"
+                    :headers="headersTableFavorities"
                     :items="itemsTableFavorities"
                     :search="search"
                     itemsPerPageText="Itens por página"
                     :class="store.getTheme ? ['tableDark', 'space'] : 'space'"
+                    noDataText="Sem dados"
                 >
                     <template v-slot:[`item.foto`]="{ item }">
                         <v-avatar>
-                            <v-img
-                                :src="`${item.pessoa.foto.name}.${item.pessoa.foto.type}`"
-                                alt="foto"
-                            ></v-img>
+                            <v-img :src="''" alt="foto"></v-img>
                         </v-avatar>
                     </template>
-                    <template v-slot:[`item.privado`]="{ item }">
-                        <v-checkbox
-                            v-model="item.privado"
-                            :label="item.privado ? 'Sim' : 'Não'"
-                            color="orange"
-                            :readonly="true"
-                        ></v-checkbox>
+                    <template v-slot:[`item.remover-favorito`]="{ item }">
+                        <vButtonAction
+                            @click="removeAsFavorite(item)"
+                            icon="mdi-cancel"
+                            :hide="true"
+                            color="red"
+                            :minWidth="true"
+                        />
                     </template>
                     <template v-slot:[`item.editar`]="{ item }">
                         <vButtonRedirect
                             :external="false"
-                            :link="`/:${item.id}`"
+                            :link="`contatos/editar/${item.id}`"
                             icon="mdi-pencil"
                             text=""
                             :hide="true"
@@ -137,6 +149,7 @@ import axios from 'axios';
 import { type IDataContact } from '@/interfaces/dataContact';
 import vTitle from '@/templates/vTitle.vue';
 import { useAppStore } from '@/stores/store';
+import router from '@/router';
 const store = useAppStore();
 const tab = ref('');
 const search = ref('');
@@ -171,93 +184,145 @@ const headersTable: Array<IHeadersTable> = [
     },
     {
         align: 'center',
-        key: 'nome',
+        key: 'pessoa.nome',
         sortable: true,
         title: 'Nome'
     },
     {
         align: 'center',
-        key: 'favoritar',
+        key: 'email',
         sortable: true,
+        title: 'Email'
+    },
+    {
+        align: 'center',
+        key: 'telefone',
+        sortable: true,
+        title: 'Telefone'
+    },
+    {
+        align: 'center',
+        key: 'favoritar',
+        sortable: false,
         title: 'Favoritar'
     },
     {
         align: 'center',
         key: 'editar',
-        sortable: true,
+        sortable: false,
         title: 'Editar'
     },
     {
         align: 'center',
         key: 'excluir',
-        sortable: true,
+        sortable: false,
         title: 'Excluir'
     }
 ];
-const itemsTableContacts: Array<IDataContact> = reactive([
+const headersTableFavorities: Array<IHeadersTable> = [
     {
-        id: 1,
-        email: '',
-        pessoa: {
-            id: 1,
-            nome: '',
-            foto: {
-                id: '1',
-                name: '',
-                type: ''
-            },
-            cpf: '',
-            endereco: ''
-        },
-        privado: false,
-        tag: '',
-        telefone: '',
-        tipoContato: '',
-        usuario: {
-            cpf: '',
-            dataNascimento: '', // yyyy-mm-dd
-            email: '',
-            id: 1,
-            nome: '',
-            password: '',
-            telefone: '', // (DD) [X]XXXX-XXXX. Ex: (12) 99876-5432, (12) 3210-4567
-            username: ''
-        }
-    }
-]);
-const itemsTableFavorities: Array<IDataContact> = reactive([
+        align: 'center',
+        key: 'foto',
+        sortable: false,
+        title: 'Foto'
+    },
     {
-        id: 1,
-        email: '',
-        pessoa: {
-            id: 1,
-            nome: '',
-            foto: {
-                id: '1',
-                name: '',
-                type: ''
-            },
-            cpf: '',
-            endereco: ''
-        },
-        privado: false,
-        tag: '',
-        telefone: '',
-        tipoContato: '',
-        usuario: {
-            cpf: '',
-            dataNascimento: '', // yyyy-mm-dd
-            email: '',
-            id: 1,
-            nome: '',
-            password: '',
-            telefone: '', // (DD) [X]XXXX-XXXX. Ex: (12) 99876-5432, (12) 3210-4567
-            username: ''
-        }
+        align: 'center',
+        key: 'pessoa.nome',
+        sortable: true,
+        title: 'Nome'
+    },
+    {
+        align: 'center',
+        key: 'email',
+        sortable: true,
+        title: 'Email'
+    },
+    {
+        align: 'center',
+        key: 'telefone',
+        sortable: true,
+        title: 'Telefone'
+    },
+    {
+        align: 'center',
+        key: 'remover-favorito',
+        sortable: false,
+        title: 'Remover favorito'
+    },
+    {
+        align: 'center',
+        key: 'editar',
+        sortable: false,
+        title: 'Editar'
+    },
+    {
+        align: 'center',
+        key: 'excluir',
+        sortable: false,
+        title: 'Excluir'
     }
-]);
-async function loadContacts() {}
-async function saveAsFavorite() {}
+];
+const itemsTableContacts: Array<IDataContact> = reactive([]);
+const itemsTableFavorities: Array<IDataContact> = reactive([]);
+async function loadContacts() {
+    await axios(`${store.getEndpoint}/api/contato/pesquisar`, {
+        method: 'POST',
+        data: {
+            termo: ''
+        }
+    })
+        .then((res) => {
+            const data: Array<IDataContact> = res.data;
+            data.forEach((el) => {
+                itemsTableContacts.push({ ...el });
+            });
+        })
+        .catch((err) => {
+            store.setMsgSnackbar(err.message);
+        });
+}
+async function loadFavorite() {
+    await axios(`${store.getEndpoint}/api/favorito/pesquisar`, {
+        method: 'GET'
+    })
+        .then((res) => {
+            const data: Array<IDataContact> = res.data;
+            data.forEach((el) => {
+                itemsTableFavorities.push({ ...el });
+            });
+        })
+        .catch((err) => {
+            store.setMsgSnackbar(err.message);
+        });
+}
+async function createAsFavorite(data: IDataContact) {
+    await axios(`${store.getEndpoint}/api/favorito/salvar`, {
+        method: 'POST',
+        data
+    })
+        .then((res) => {
+            store.setMsgSnackbar(res.data.message);
+            router.go(); // reload
+        })
+        .catch((err) => {
+            store.setMsgSnackbar(err.message);
+        });
+}
+async function removeAsFavorite(data: IDataContact) {
+    await axios(`${store.getEndpoint}/api/favorito/remover/${data.id}`, {
+        method: 'DELETE'
+    })
+        .then((res) => {
+            store.setMsgSnackbar(res.data.message);
+            router.go();
+        })
+        .catch((err) => {
+            store.setMsgSnackbar(err.message);
+        });
+}
+loadContacts();
+loadFavorite();
 // consegui deixar uma table genérica, mas o ruim disso, é que em algumas predefinições que tenho que fazer, não fica legal
 </script>
 
