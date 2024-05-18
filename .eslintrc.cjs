@@ -6,6 +6,8 @@ module.exports = {
   'extends': [
     'plugin:vue/vue3-essential',
     'eslint:recommended',
+    'plugin:vue/base',
+    'plugin:vuetify/base',
     '@vue/eslint-config-typescript',
     '@vue/eslint-config-prettier/skip-formatting'
   ],
