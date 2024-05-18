@@ -2,7 +2,7 @@ export const rules = {
     text: [(v) => !!v || 'Prenchimento é obrigatório'],
     number: [
         (v) => !!v || 'Prenchimento é obrigatório',
-        (v) => v.search(/^\d+$/) != -1 || 'Campo só aceita números'
+        (v) => v.toString().search(/^\d+$/) != -1 || 'Campo só aceita números'
     ],
     cpf: [
         (v) => !!v || 'Prenchimento é obrigatório',

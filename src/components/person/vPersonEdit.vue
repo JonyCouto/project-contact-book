@@ -13,13 +13,20 @@
                         v-model="data.nome"
                         :rules="rules.text"
                         variant="solo"
+                        :theme="store.getTheme ? 'dark' : ''"
                     >
                     </v-text-field>
                 </v-col>
             </v-row>
             <v-row>
                 <v-col cols="12">
-                    <v-text-field label="CPF" v-model="data.cpf" :rules="rules.cpf" variant="solo">
+                    <v-text-field
+                        label="CPF"
+                        v-model="data.cpf"
+                        :rules="rules.cpf"
+                        variant="solo"
+                        :theme="store.getTheme ? 'dark' : ''"
+                    >
                     </v-text-field>
                 </v-col>
             </v-row>
@@ -30,6 +37,7 @@
                         v-model="data.endereco.logradouro"
                         :rules="rules.text"
                         variant="solo"
+                        :theme="store.getTheme ? 'dark' : ''"
                     >
                     </v-text-field>
                 </v-col>
@@ -39,6 +47,7 @@
                         v-model="data.endereco.numero"
                         :rules="rules.number"
                         variant="solo"
+                        :theme="store.getTheme ? 'dark' : ''"
                     >
                     </v-text-field>
                 </v-col>
@@ -50,6 +59,7 @@
                         v-model="data.endereco.bairro"
                         :rules="rules.text"
                         variant="solo"
+                        :theme="store.getTheme ? 'dark' : ''"
                     >
                     </v-text-field>
                 </v-col>
@@ -59,6 +69,7 @@
                         v-model="data.endereco.cidade"
                         :rules="rules.text"
                         variant="solo"
+                        :theme="store.getTheme ? 'dark' : ''"
                     >
                     </v-text-field>
                 </v-col>
@@ -70,6 +81,7 @@
                         v-model="data.endereco.cep"
                         :rules="rules.cep"
                         variant="solo"
+                        :theme="store.getTheme ? 'dark' : ''"
                     >
                     </v-text-field>
                 </v-col>
@@ -79,6 +91,7 @@
                         v-model="data.endereco.estado"
                         :rules="rules.text"
                         variant="solo"
+                        :theme="store.getTheme ? 'dark' : ''"
                     >
                     </v-text-field>
                 </v-col>
@@ -90,11 +103,18 @@
                         v-model="data.endereco.pais"
                         :rules="rules.text"
                         variant="solo"
+                        :theme="store.getTheme ? 'dark' : ''"
                     >
                     </v-text-field>
                 </v-col>
                 <v-col cols="12" md="6">
-                    <v-file-input label="Foto" :rules="rules.text" variant="solo" v-model="picture">
+                    <v-file-input
+                        label="Foto"
+                        :rules="rules.text"
+                        variant="solo"
+                        v-model="picture"
+                        :theme="store.getTheme ? 'dark' : ''"
+                    >
                     </v-file-input>
                 </v-col>
             </v-row>
@@ -174,12 +194,12 @@ async function savePerson(data: IDataPerson) {
         })
             .then(async (res) => {
                 // subir nova foto
-                console.log(picture.value);
+                const file = new FormData();
+                file.append('foto', picture.value);
+                console.log(res.data.object.id);
                 await axios(`${store.getEndpoint}/api/foto/upload/${res.data.object.id}`, {
                     method: 'POST',
-                    data: {
-                        foto: picture.value
-                    }
+                    data: file
                 })
                     .then((res) => {
                         store.setMsgSnackbar(res.data.message);

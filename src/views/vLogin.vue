@@ -31,8 +31,7 @@
                 <v-col cols="10" md="4">
                     <v-checkbox
                         color="black"
-                        v-model="store.getPreferentialLogin"
-                        @click="store.changePreferentialLogin"
+                        v-model="preferentialLogin"
                         label="Lembrar credencias?"
                     >
                     </v-checkbox>
@@ -62,6 +61,7 @@ import axios from 'axios';
 import { validate } from '@/global/validate';
 const form = ref(null);
 const store = useAppStore();
+const preferentialLogin = ref(store.getPreferentialLogin);
 const data: IDataLogin = reactive({
     password: '',
     username: ''
@@ -78,8 +78,12 @@ async function login(data: IDataLogin) {
         })
             .then((res) => {
                 // salva somente se der certo o login
-                if (store.getPreferentialLogin) {
+                if (preferentialLogin.value) {
+                    store.setPreferentialLogin(true);
                     store.saveLogin(data);
+                } else {
+                    store.clearLogin();
+                    store.setPreferentialLogin(false);
                 }
                 store.setMsgSnackbar('Login efetuado com sucesso!');
                 store.saveUserLogged(res.data);

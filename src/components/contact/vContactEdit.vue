@@ -14,6 +14,7 @@
                         variant="solo"
                         readonly
                         :rules="rules.text"
+                        :theme="store.getTheme ? 'dark' : ''"
                     >
                     </v-text-field>
                 </v-col>
@@ -25,6 +26,7 @@
                         v-model="data.email"
                         :rules="rules.email"
                         variant="solo"
+                        :theme="store.getTheme ? 'dark' : ''"
                     >
                     </v-text-field>
                 </v-col>
@@ -34,13 +36,20 @@
                         v-model="data.telefone"
                         :rules="rules.mobile"
                         variant="solo"
+                        :theme="store.getTheme ? 'dark' : ''"
                     >
                     </v-text-field>
                 </v-col>
             </v-row>
             <v-row>
                 <v-col cols="12" md="6">
-                    <v-text-field label="Tag" v-model="data.tag" :rules="rules.text" variant="solo">
+                    <v-text-field
+                        label="Tag"
+                        v-model="data.tag"
+                        :rules="rules.text"
+                        variant="solo"
+                        :theme="store.getTheme ? 'dark' : ''"
+                    >
                     </v-text-field>
                 </v-col>
                 <v-col cols="12" md="6">
@@ -50,6 +59,7 @@
                         :rules="rules.text"
                         :items="['CELULAR', 'EMAIL', 'TELEFONE']"
                         variant="solo"
+                        :theme="store.getTheme ? 'dark' : ''"
                     >
                     </v-combobox>
                 </v-col>
@@ -61,6 +71,7 @@
                         v-model="data.privado"
                         variant="solo"
                         color="orange"
+                        :theme="store.getTheme ? 'dark' : ''"
                     >
                     </v-checkbox>
                 </v-col>

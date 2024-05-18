@@ -24,6 +24,10 @@ export const useAppStore = defineStore('store', () => {
         status: false,
         msg: ''
     });
+    const safeDelete = reactive({
+        status: false,
+        msg: ''
+    });
     const getTheme = computed(() => {
         if (localStorage.getItem('darkTheme')) {
             // ajuste de erro para ts
@@ -36,6 +40,9 @@ export const useAppStore = defineStore('store', () => {
     });
     const getStatusSnackbar = computed((): boolean => {
         return snackbar.status;
+    });
+    const getStatusSafeDelete = computed((): boolean => {
+        return safeDelete.status;
     });
     const getLoggedInfo = computed((): boolean => {
         if (localStorage.getItem('logged')) {
@@ -113,8 +120,14 @@ export const useAppStore = defineStore('store', () => {
         localStorage.savedLogin = JSON.stringify(savedLogin);
         localStorage.preferentialLogin = preferentialLogin.value;
     }
-    function changePreferentialLogin() {
-        preferentialLogin.value = !preferentialLogin.value;
+    function clearLogin() {
+        savedLogin.username = '';
+        savedLogin.password = '';
+        localStorage.removeItem('savedLogin');
+    }
+    function setPreferentialLogin(preferential: boolean) {
+        preferentialLogin.value = preferential;
+        localStorage.preferentialLogin = preferential;
     }
     function changeTheme() {
         darkTheme.value = !darkTheme.value;
@@ -130,6 +143,12 @@ export const useAppStore = defineStore('store', () => {
         activeSnackbar();
         snackbar.msg = msg;
     }
+    function desativeSafeDelete() {
+        safeDelete.status = false;
+    }
+    function activeSafeDelete() {
+        safeDelete.status = true;
+    }
     return {
         getTheme,
         getMsgSnackbar,
@@ -139,13 +158,17 @@ export const useAppStore = defineStore('store', () => {
         getPreferentialLogin,
         getStatusSnackbar,
         getUserLogged,
+        getStatusSafeDelete,
         saveUserLogged,
         logoutUser,
-        changePreferentialLogin,
+        setPreferentialLogin,
         saveLogin,
         changeTheme,
         activeSnackbar,
         setMsgSnackbar,
-        desativeSnackbar
+        desativeSnackbar,
+        activeSafeDelete,
+        desativeSafeDelete,
+        clearLogin
     };
 });

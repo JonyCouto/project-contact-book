@@ -21,27 +21,32 @@
                     />
                 </v-col>
             </v-row>
-            <v-text-field
-                v-model="search"
-                label="Procurar"
-                prepend-inner-icon="mdi-magnify"
-                variant="outlined"
-                hide-details
-                single-line
-                class="space"
-            ></v-text-field>
+            <v-row>
+                <v-col cols="12">
+                    <v-text-field
+                        v-model="search"
+                        label="Procurar"
+                        prepend-inner-icon="mdi-magnify"
+                        variant="outlined"
+                        hide-details
+                        single-line
+                        class="space"
+                        :theme="store.getTheme ? 'dark' : ''"
+                    ></v-text-field>
+                </v-col>
+            </v-row>
             <v-row cols="12">
                 <v-data-table
                     :headers="headersTable"
                     :items="itemsTable"
                     :search="search"
                     itemsPerPageText="Itens por página"
-                    :class="store.getTheme ? ['tableDark', 'space'] : 'space'"
                     noDataText="Sem dados"
+                    :class="store.getTheme ? 'tableDark' : ''"
                 >
                     <template v-slot:[`item.foto`]="{ item }">
                         <v-avatar>
-                            <v-img :src="''" alt="foto"></v-img>
+                            <v-img alt="Foto" :src="item.foto?.img"></v-img>
                         </v-avatar>
                     </template>
                     <template v-slot:[`item.editar`]="{ item }">
@@ -64,6 +69,7 @@
                             :minWidth="true"
                             @click="deletePerson(item)"
                         />
+                        <vSafeDelete :action="() => deletePerson(item)" />
                     </template>
                 </v-data-table>
             </v-row>
@@ -119,7 +125,17 @@ async function loadPeople() {
     })
         .then((res) => {
             const data: Array<IDataPerson> = res.data;
-            data.forEach((element) => {
+            data.forEach(async (element) => {
+                await axios(`${store.getEndpoint}/api/foto/download/${element.id}`, {
+                    method: 'GET',
+                    responseType: 'blob' // o retorno tem que ser blob em caso de imagem
+                })
+                    .then((res) => {
+                        if (element.foto != null) {
+                            element.foto.img = window.URL.createObjectURL(res.data); // forma de criar a url da imagem para ser usada
+                        }
+                    })
+                    .catch((err) => store.setMsgSnackbar(err.message));
                 itemsTable.push({ ...element });
             });
         })
@@ -145,5 +161,9 @@ loadPeople();
 <style lang="scss" scoped>
 .space {
     margin-top: 10px;
+}
+.tableDark {
+    background-color: #18191a;
+    color: white;
 }
 </style>

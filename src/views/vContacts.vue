@@ -41,7 +41,7 @@
                 >
                     <template v-slot:[`item.foto`]="{ item }">
                         <v-avatar>
-                            <v-img :src="''"></v-img>
+                            <v-img alt="Foto" :src="item.pessoa?.foto?.img"></v-img>
                         </v-avatar>
                     </template>
                     <template v-slot:[`item.privado`]="{ item }">
@@ -65,13 +65,14 @@
                     </template>
                     <template v-slot:[`item.excluir`]="{ item }">
                         <VButtonAction
-                            @click="deleteContact(item)"
+                            @click="store.activeSafeDelete"
                             icon="mdi-delete"
                             text=""
                             :hide="true"
                             color="red"
                             :minWidth="true"
                         />
+                        <vSafeDelete :action="() => deleteContact(item)" />
                     </template>
                 </v-data-table>
             </v-row>
@@ -89,6 +90,7 @@ import vTitle from '@/templates/vTitle.vue';
 import { useAppStore } from '@/stores/store';
 import { useRouter } from 'vue-router';
 import VButtonAction from '@/components/button/vButtonAction.vue';
+import vSafeDelete from '@/components/snackbar/vSafeDelete.vue';
 const router = useRouter();
 const store = useAppStore();
 const search = ref('');
@@ -158,7 +160,17 @@ async function loadContacts() {
     })
         .then((res) => {
             const data: Array<IDataContact> = res.data;
-            data.forEach((el) => {
+            data.forEach(async (el) => {
+                await axios(`${store.getEndpoint}/api/foto/download/${el.pessoa.id}`, {
+                    method: 'GET',
+                    responseType: 'blob' // o retorno tem que ser blob em caso de imagem
+                })
+                    .then((res) => {
+                        if (el.pessoa.foto != null) {
+                            el.pessoa.foto.img = window.URL.createObjectURL(res.data); // forma de criar a url da imagem para ser usada
+                        }
+                    })
+                    .catch((err) => store.setMsgSnackbar(err.message));
                 itemsTable.push({ ...el });
             });
         })
@@ -184,5 +196,9 @@ loadContacts();
 <style lang="scss" scoped>
 .space {
     margin-top: 10px;
+}
+.tableDark {
+    background-color: #18191a;
+    color: white;
 }
 </style>

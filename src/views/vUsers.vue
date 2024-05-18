@@ -131,4 +131,8 @@ verifyPermission();
     display: flex;
     justify-content: end;
 }
+.tableDark {
+    background-color: #18191a;
+    color: white;
+}
 </style>

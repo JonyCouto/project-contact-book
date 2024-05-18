@@ -2,7 +2,7 @@
     <v-snackbar v-model="store.getStatusSnackbar" vertical multi-line absolute>
         {{ store.getMsgSnackbar }}
         <template v-slot:actions>
-            <v-btn color="red" variant="text" @click="store.desativeSnackbar"> Close </v-btn>
+            <v-btn color="red" variant="text" @click="store.desativeSnackbar"> Fechar </v-btn>
         </template>
     </v-snackbar>
 </template>

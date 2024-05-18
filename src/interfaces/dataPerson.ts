@@ -5,6 +5,7 @@ export interface IDataPerson {
         id: string;
         name: string;
         type: string;
+        img?: string;
     };
     cpf: string;
     endereco: {

@@ -15,6 +15,7 @@
                         v-model="data.usuario.nome"
                         :rules="rules.text"
                         variant="solo"
+                        :theme="store.getTheme ? 'dark' : ''"
                     >
                     </v-text-field>
                 </v-col>
@@ -26,6 +27,7 @@
                         v-model="data.usuario.cpf"
                         :rules="rules.cpf"
                         variant="solo"
+                        :theme="store.getTheme ? 'dark' : ''"
                     >
                     </v-text-field>
                 </v-col>
@@ -37,6 +39,7 @@
                         v-model="data.usuario.username"
                         :rules="rules.text"
                         variant="solo"
+                        :theme="store.getTheme ? 'dark' : ''"
                     >
                     </v-text-field>
                 </v-col>
@@ -46,6 +49,7 @@
                         v-model="data.usuario.email"
                         :rules="rules.email"
                         variant="solo"
+                        :theme="store.getTheme ? 'dark' : ''"
                     >
                     </v-text-field>
                 </v-col>
@@ -57,6 +61,7 @@
                         v-model="data.usuario.telefone"
                         :rules="rules.mobile"
                         variant="solo"
+                        :theme="store.getTheme ? 'dark' : ''"
                     >
                     </v-text-field>
                 </v-col>
@@ -66,6 +71,7 @@
                         v-model="data.usuario.dataNascimento"
                         :rules="rules.birth"
                         variant="solo"
+                        :theme="store.getTheme ? 'dark' : ''"
                     >
                     </v-text-field>
                 </v-col>
@@ -78,6 +84,7 @@
                         :rules="rules.password"
                         type="password"
                         variant="solo"
+                        :theme="store.getTheme ? 'dark' : ''"
                     >
                     </v-text-field>
                 </v-col>
@@ -88,6 +95,7 @@
                         :rules="rulesRetypePassword"
                         type="password"
                         variant="solo"
+                        :theme="store.getTheme ? 'dark' : ''"
                     >
                     </v-text-field>
                 </v-col>
@@ -100,6 +108,7 @@
                         v-model="data.tipos[0]"
                         :rules="rules.text"
                         variant="solo"
+                        :theme="store.getTheme ? 'dark' : ''"
                     >
                     </v-combobox>
                 </v-col>
@@ -212,7 +221,6 @@ async function saveUser(data: IDataUser) {
                 router.push('/usuarios');
             })
             .catch((err) => {
-                console.log(err);
                 store.setMsgSnackbar(err.message);
             });
     }

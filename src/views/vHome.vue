@@ -10,7 +10,7 @@
                 <v-col cols="12">
                     <vButtonRedirect
                         :external="false"
-                        link="contatos/editar/novo"
+                        link="contatos/adicionar"
                         icon="mdi-plus"
                         :hide="false"
                         color="blue"
@@ -52,7 +52,7 @@
                 >
                     <template v-slot:[`item.foto`]="{ item }">
                         <v-avatar>
-                            <v-img :src="``" alt="foto"></v-img>
+                            <v-img alt="Foto" :src="item.pessoa.foto?.img"></v-img>
                         </v-avatar>
                     </template>
                     <template v-slot:[`item.favoritar`]="{ item }">
@@ -76,15 +76,15 @@
                         />
                     </template>
                     <template v-slot:[`item.excluir`]="{ item }">
-                        <vButtonRedirect
-                            :external="false"
-                            :link="`/:${item.id}`"
+                        <vButtonAction
+                            @click="store.activeSafeDelete"
                             icon="mdi-delete"
                             text=""
                             :hide="true"
                             color="red"
                             :minWidth="true"
                         />
+                        <vSafeDelete :action="() => deleteContact(item)" />
                     </template>
                 </v-data-table>
             </v-row>
@@ -99,7 +99,7 @@
                 >
                     <template v-slot:[`item.foto`]="{ item }">
                         <v-avatar>
-                            <v-img :src="''" alt="foto"></v-img>
+                            <v-img alt="Foto" :src="item.pessoa.foto?.img"></v-img>
                         </v-avatar>
                     </template>
                     <template v-slot:[`item.remover-favorito`]="{ item }">
@@ -122,17 +122,6 @@
                             :minWidth="true"
                         />
                     </template>
-                    <template v-slot:[`item.excluir`]="{ item }">
-                        <vButtonRedirect
-                            :external="false"
-                            :link="`/:${item.id}`"
-                            icon="mdi-delete"
-                            text=""
-                            :hide="true"
-                            color="red"
-                            :minWidth="true"
-                        />
-                    </template>
                 </v-data-table>
             </v-row>
         </v-containeir-fluid>
@@ -142,6 +131,7 @@
 <script setup lang="ts">
 import vButtonRedirect from '@/components/button/vButtonRedirect.vue';
 import vButtonAction from '@/components/button/vButtonAction.vue';
+import vSafeDelete from '@/components/snackbar/vSafeDelete.vue';
 import { type IItems } from '@/interfaces/itemsBtn';
 import { ref, reactive } from 'vue';
 import { type IHeadersTable } from '@/interfaces/headersTable';
@@ -246,21 +236,15 @@ const headersTableFavorities: Array<IHeadersTable> = [
     },
     {
         align: 'center',
-        key: 'remover-favorito',
-        sortable: false,
-        title: 'Remover favorito'
-    },
-    {
-        align: 'center',
         key: 'editar',
         sortable: false,
         title: 'Editar'
     },
     {
         align: 'center',
-        key: 'excluir',
+        key: 'remover-favorito',
         sortable: false,
-        title: 'Excluir'
+        title: 'Remover favorito'
     }
 ];
 const itemsTableContacts: Array<IDataContact> = reactive([]);
@@ -274,7 +258,17 @@ async function loadContacts() {
     })
         .then((res) => {
             const data: Array<IDataContact> = res.data;
-            data.forEach((el) => {
+            data.forEach(async (el) => {
+                await axios(`${store.getEndpoint}/api/foto/download/${el.pessoa.id}`, {
+                    method: 'GET',
+                    responseType: 'blob' // o retorno tem que ser blob em caso de imagem
+                })
+                    .then((res) => {
+                        if (el.pessoa.foto != null) {
+                            el.pessoa.foto.img = window.URL.createObjectURL(res.data); // forma de criar a url da imagem para ser usada
+                        }
+                    })
+                    .catch((err) => store.setMsgSnackbar(err.message));
                 itemsTableContacts.push({ ...el });
             });
         })
@@ -288,7 +282,17 @@ async function loadFavorite() {
     })
         .then((res) => {
             const data: Array<IDataContact> = res.data;
-            data.forEach((el) => {
+            data.forEach(async (el) => {
+                await axios(`${store.getEndpoint}/api/foto/download/${el.pessoa.id}`, {
+                    method: 'GET',
+                    responseType: 'blob' // o retorno tem que ser blob em caso de imagem
+                })
+                    .then((res) => {
+                        if (el.pessoa.foto != null) {
+                            el.pessoa.foto.img = window.URL.createObjectURL(res.data); // forma de criar a url da imagem para ser usada
+                        }
+                    })
+                    .catch((err) => store.setMsgSnackbar(err.message));
                 itemsTableFavorities.push({ ...el });
             });
         })
@@ -316,6 +320,18 @@ async function removeAsFavorite(data: IDataContact) {
         .then((res) => {
             store.setMsgSnackbar(res.data.message);
             router.go();
+        })
+        .catch((err) => {
+            store.setMsgSnackbar(err.message);
+        });
+}
+async function deleteContact(data: IDataContact) {
+    await axios(`${store.getEndpoint}/api/contato/remover/${data.id}`, {
+        method: 'DELETE'
+    })
+        .then((res) => {
+            store.setMsgSnackbar(res.data.message);
+            router.go(); // reload
         })
         .catch((err) => {
             store.setMsgSnackbar(err.message);
